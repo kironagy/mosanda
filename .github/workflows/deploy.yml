@@ -2,7 +2,7 @@ name: Deploy Laravel to Server
 
 on:
   push:
-    branches: [dev]
+    branches: [main]
 
 jobs:
   deploy:
@@ -21,7 +21,7 @@ jobs:
           script: |
             echo "🚀 Starting Laravel deployment..."
             cd ${{ secrets.WORKDIR }}
-            git pull origin dev
+            git pull origin main
             echo "📦 Installing PHP dependencies..."
             composer install --no-interaction --prefer-dist --optimize-autoloader
             echo "🔧 Running Laravel setup..."
