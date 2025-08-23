@@ -3,11 +3,11 @@ name: Deploy Laravel to Server
 on:
   push:
     branches: [main]
-
+    
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
+    environment: deploy
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
