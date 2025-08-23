@@ -1,13 +1,12 @@
-name: Deploy Laravel to Server
+name: 🚀 Deploy Laravel to Server
 
 on:
   push:
     branches: [main]
-    
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: deploy
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
@@ -17,23 +16,34 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           timeout: 60s
-          command_timeout: 10m
+          command_timeout: 15m
           script: |
             echo "🚀 Starting Laravel deployment..."
             cd ${{ secrets.WORKDIR }}
-            git pull origin main
+
+            echo "🔄 Pulling latest code..."
+            git fetch --all
+            git reset --hard origin/main
+
             echo "📦 Installing PHP dependencies..."
             composer install --no-interaction --prefer-dist --optimize-autoloader
+
             echo "🔧 Running Laravel setup..."
+            php artisan down || true
             php artisan config:clear
             php artisan cache:clear
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache
-            echo "📂 Setting permissions..."
-            chmod -R ug+rwx storage bootstrap/cache
+
             echo "🧪 Running migrations..."
             php artisan migrate --force
+
+            echo "📂 Setting permissions..."
+            chmod -R ug+rwx storage bootstrap/cache
+
             echo "🔄 Restarting Laravel queue workers..."
             sudo supervisorctl restart laravel-worker:* > /dev/null 2>&1 || true
-            echo "✅ Laravel deployment completed!"
+            php artisan up
+
+            echo "✅ Deployment finished successfully!"
