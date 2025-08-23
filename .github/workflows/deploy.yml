@@ -2,12 +2,12 @@ name: Deploy Laravel to Server
 
 on:
   push:
-    branches: [dev]
-
+    branches: [main]
+    
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
+    environment: deploy
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
@@ -21,7 +21,7 @@ jobs:
           script: |
             echo "🚀 Starting Laravel deployment..."
             cd ${{ secrets.WORKDIR }}
-            git pull origin dev
+            git pull origin main
             echo "📦 Installing PHP dependencies..."
             composer install --no-interaction --prefer-dist --optimize-autoloader
             echo "🔧 Running Laravel setup..."
