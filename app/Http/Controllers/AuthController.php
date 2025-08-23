@@ -37,6 +37,8 @@ class AuthController extends Controller
         }
     }
 
+    // Handle 
+
     public function logout(Request $request){
         // Check if user is authenticated
         if (auth("sanctum")->user()) {
