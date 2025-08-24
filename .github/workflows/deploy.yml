@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: deploy
     steps:
-      - name: Deploy via SSH
+      - name: SSH Deploy
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
