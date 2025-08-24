@@ -34,8 +34,8 @@ class PaymentController extends Controller
             ],
             'json' => [
                 'price_amount'      => $amount,
-                'price_currency'    => 'usd',
-                'pay_currency'      => 'usdt',
+                'price_currency'    => 'usd',   // ✅ عملة تسعير المنتج
+                'pay_currency'      => 'eth',   // ✅ لازم تختار من القائمة اللي فوق
                 'ipn_callback_url'  => route('nowpayments.webhook'),
                 'order_id'          => uniqid(),
                 'order_description' => 'Package purchase #' . $package->id
