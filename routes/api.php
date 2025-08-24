@@ -37,7 +37,6 @@ Route::post('/webhook', [PaymentController::class, 'webhook'])->name('nowpayment
 Route::middleware(SetLangMiddleware::class)->group(function(){
     // FAQ Routes
     Route::get('faqs', [FaqController::class, 'index']);
-
     // Service Routes
     Route::get('services', [ServiceController::class, 'index']);
 
