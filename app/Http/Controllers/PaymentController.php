@@ -35,7 +35,7 @@ class PaymentController extends Controller
             'json' => [
                 'price_amount'      => $amount,
                 'price_currency'    => 'usd',
-                'pay_currency'      => 'btc',
+                'pay_currency'      => 'usdt',
                 'ipn_callback_url'  => route('nowpayments.webhook'),
                 'order_id'          => uniqid(),
                 'order_description' => 'Package purchase #' . $package->id
