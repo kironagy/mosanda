@@ -9,10 +9,7 @@ class Pakeges extends Model
 {
     use HasTranslations;
     
-    protected $fillable = [
-        'image', 'title', 'description', 'amount_from', 'amount_to',
-        'support_percentage', 'price'
-    ];
+    protected $guarded = [];
     
     public $translatable = ['title', 'description'];
     
