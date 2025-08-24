@@ -46,7 +46,10 @@ Route::middleware(SetLangMiddleware::class)->group(function(){
     // Package Routes
     Route::apiResource('pakeges', PakegeController::class)->only(['index' , 'show']);
 
-    Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
+    Route::middleware('auth:sanctum')
+    ->prefix('admin')
+    ->as('admin.')
+    ->group(function () {
         require __DIR__.'/admin.php';
     });
 });
