@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\PakegeController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Middleware\SetLangMiddleware;
 
 /*
@@ -26,6 +27,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post("login" , [AuthController::class , 'login']);
 Route::post("logout" , [AuthController::class , 'logout']);
+
+
+Route::post('/payment/{pakageId}', [PaymentController::class, 'createPayment']);
+Route::post('/webhook', [PaymentController::class, 'webhook'])->name('nowpayments.webhook');
+
+
+
 Route::middleware(SetLangMiddleware::class)->group(function(){
     // FAQ Routes
     Route::get('faqs', [FaqController::class, 'index']);
