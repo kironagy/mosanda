@@ -12,17 +12,18 @@ class ContactController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Contacts::query();
+        // Get all contacts first
+        $contacts = Contacts::all();
 
         // Apply search if search parameter exists
         if ($request->has('search')) {
             $searchTerm = $request->search;
-            $query->where(function($q) use ($searchTerm) {
-                $q->where('name', 'LIKE', "%{$searchTerm}%")
-                  ->orWhere('phone', 'LIKE', "%{$searchTerm}%")
-                  ->orWhere('bank_name', 'LIKE', "%{$searchTerm}%")
-                  ->orWhere('support_for', 'LIKE', "%{$searchTerm}%")
-                  ->orWhere('status', 'LIKE', "%{$searchTerm}%");
+            $contacts = $contacts->filter(function($contact) use ($searchTerm) {
+                return str_contains(strtolower($contact->name), strtolower($searchTerm)) ||
+                       str_contains(strtolower($contact->phone), strtolower($searchTerm)) ||
+                       str_contains(strtolower($contact->bank_name), strtolower($searchTerm)) ||
+                       str_contains(strtolower($contact->support_for), strtolower($searchTerm)) ||
+                       str_contains(strtolower($contact->status), strtolower($searchTerm));
             });
         }
 
@@ -30,22 +31,22 @@ class ContactController extends Controller
         $limit = $request->input('limit', 10); // Default limit is 10
         $page = $request->input('page', 1);    // Default page is 1
 
-        // Get paginated results
-        $contacts = $query->paginate($limit, ['*'], 'page', $page);
+        // Manual pagination
+        $total = $contacts->count();
+        $contacts = $contacts->forPage($page, $limit);
 
         return response()->json([
-            'data' => $contacts->items(),
+            'data' => $contacts->values()->all(),
             'pagination' => [
-                'total' => $contacts->total(),
-                'per_page' => $contacts->perPage(),
-                'current_page' => $contacts->currentPage(),
-                'last_page' => $contacts->lastPage(),
-                'from' => $contacts->firstItem(),
-                'to' => $contacts->lastItem()
+                'total' => $total,
+                'per_page' => $limit,
+                'current_page' => $page,
+                'last_page' => ceil($total / $limit),
+                'from' => ($page - 1) * $limit + 1,
+                'to' => min($page * $limit, $total)
             ]
         ]);
     }
-
     public function calcPercentage(Request $request)
     {
         $validator = Validator::make($request->all(), [
