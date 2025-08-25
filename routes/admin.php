@@ -22,4 +22,4 @@ Route::apiResource('contacts', ContactController::class);
 Route::apiResource('pakeges', PakegeController::class);
 
 Route::apiResource('settings', SettingController::class)->only(['index', 'update']);
-Route::get('dashboard', [DashboarController::class , 'index']);
+Route::get('dashboard', [DashboarController::class , 'getStatistics']);
