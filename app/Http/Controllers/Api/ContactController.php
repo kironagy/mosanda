@@ -21,7 +21,8 @@ class ContactController extends Controller
                 $q->where('name', 'LIKE', "%{$searchTerm}%")
                   ->orWhere('phone', 'LIKE', "%{$searchTerm}%")
                   ->orWhere('bank_name', 'LIKE', "%{$searchTerm}%")
-                  ->orWhere('support_for', 'LIKE', "%{$searchTerm}%");
+                  ->orWhere('support_for', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('status', 'LIKE', "%{$searchTerm}%");
             });
         }
 
