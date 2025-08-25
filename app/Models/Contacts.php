@@ -8,7 +8,7 @@ class Contacts extends Model
 {
     protected $fillable = [
         'name', 'phone', 'bank_name', 'bank_iban', 'support_for',
-        'total_need_amount', 'support_percentage', 'support_amount', 'amount'
+        'total_need_amount', 'support_percentage', 'support_amount', 'amount', 'status' ,'message'
     ];
     
     protected $casts = [

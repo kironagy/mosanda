@@ -76,7 +76,7 @@ class ContactController extends Controller
             'support_for' => 'required|string',
             'total_need_amount' => 'required|numeric|min:0',
             'support_percentage' => 'required|numeric|min:0|max:100',
-            'support_amount' => 'required|numeric|min:0'
+            'support_amount' => 'required|numeric|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -115,6 +115,8 @@ class ContactController extends Controller
             'support_percentage' => 'sometimes|required|numeric|min:0|max:100',
             'support_amount' => 'sometimes|required|numeric|min:0',
             'amount' => 'sometimes|required|numeric|min:0',
+            'status' => 'sometimes|required|string',
+            'message' => 'sometimes|required|string',
         ]);
         
         if ($validator->fails()) {
