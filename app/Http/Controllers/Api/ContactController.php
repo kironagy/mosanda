@@ -13,17 +13,17 @@ class ContactController extends Controller
     public function index(Request $request)
     {
         // Get all contacts first
-        $contacts = Contacts::all();
+        $contacts = Contacts::orderBy('id', 'desc');
 
         // Apply search if search parameter exists
         if ($request->has('search')) {
             $searchTerm = $request->search;
-            $contacts = $contacts->filter(function($contact) use ($searchTerm) {
-                return str_contains(strtolower($contact->name), strtolower($searchTerm)) ||
-                       str_contains(strtolower($contact->phone), strtolower($searchTerm)) ||
-                       str_contains(strtolower($contact->bank_name), strtolower($searchTerm)) ||
-                       str_contains(strtolower($contact->support_for), strtolower($searchTerm)) ||
-                       str_contains(strtolower($contact->status), strtolower($searchTerm));
+            $contacts = $contacts->where(function($query) use ($searchTerm) {
+                $query->where('name', 'like', '%' . $searchTerm . '%')
+                      ->orWhere('phone', 'like', '%' . $searchTerm . '%')
+                      ->orWhere('bank_name', 'like', '%' . $searchTerm . '%')
+                      ->orWhere('support_for', 'like', '%' . $searchTerm . '%')
+                      ->orWhere('status', 'like', '%' . $searchTerm . '%');
             });
         }
 
@@ -31,12 +31,14 @@ class ContactController extends Controller
         $limit = $request->input('limit', 10); // Default limit is 10
         $page = $request->input('page', 1);    // Default page is 1
 
-        // Manual pagination
+        // Get total before pagination
         $total = $contacts->count();
-        $contacts = $contacts->forPage($page, $limit);
+
+        // Apply pagination
+        $contacts = $contacts->paginate($limit, ['*'], 'page', $page);
 
         return response()->json([
-            'data' => $contacts->values()->all(),
+            'data' => $contacts->items(),
             'pagination' => [
                 'total' => $total,
                 'per_page' => $limit,
