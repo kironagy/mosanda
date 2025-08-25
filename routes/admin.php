@@ -6,8 +6,7 @@ use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\PakegeController;
-
-
+use App\Http\Controllers\SettingController;
 
 // FAQ Routes
 Route::apiResource('faqs', FaqController::class);
@@ -20,3 +19,5 @@ Route::apiResource('contacts', ContactController::class);
 
 // Package Routes
 Route::apiResource('pakeges', PakegeController::class);
+
+Route::apiResource('settings', SettingController::class)->only(['index', 'update']);

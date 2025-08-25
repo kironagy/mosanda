@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Contacts;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -43,6 +44,27 @@ class ContactController extends Controller
             ]
         ]);
     }
+
+    public function calcPercentage(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'support_amount' => 'required|numeric|min:0',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $support_amount = $request->support_amount;
+        $data = Setting::first();
+        $supportPercentage = $data['subscription_fee_percentage'];
+        // $supportAmount = $totalNeedAmount * ($supportPercentage / 100);
+        $supportAmount = $support_amount * ($supportPercentage / 100);
+
+        return response()->json([
+            'amount' => $supportAmount,
+        ]);
+    }
     
     public function store(Request $request)
     {
@@ -54,15 +76,21 @@ class ContactController extends Controller
             'support_for' => 'required|string',
             'total_need_amount' => 'required|numeric|min:0',
             'support_percentage' => 'required|numeric|min:0|max:100',
-            'support_amount' => 'required|numeric|min:0',
-            'amount' => 'required|numeric|min:0',
+            'support_amount' => 'required|numeric|min:0'
         ]);
-        
+
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
+
+        $data = Setting::first();
+        $supportPercentage = $data['subscription_fee_percentage'] ?? 0;
+        $amount = $request->support_amount * ($supportPercentage / 100);
+
+        $requestData = $request->all();
+        $requestData['amount'] = $amount;
         
-        $contact = Contacts::create($request->all());
+        $contact = Contacts::create($requestData);
         
         return response()->json(['data' => $contact, 'message' => 'Contact created successfully'], 201);
     }

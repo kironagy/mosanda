@@ -33,6 +33,7 @@ Route::post('/payment/{pakageId}', [PaymentController::class, 'createPayment']);
 Route::post('/webhook', [PaymentController::class, 'webhook'])->name('nowpayments.webhook');
 // Handle
 
+Route::post("calc-percentage" , [ContactController::class , 'calcPercentage']);
 
 Route::middleware(SetLangMiddleware::class)->group(function(){
     // FAQ Routes

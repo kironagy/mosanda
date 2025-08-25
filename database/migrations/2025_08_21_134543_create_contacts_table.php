@@ -22,7 +22,7 @@ return new class extends Migration
             $table->decimal("support_percentage" , 10,2)->default(0);
             $table->decimal("support_amount" , 10,2)->default(0);
             $table->decimal("amount" , 10,2)->default(0);
-            $table->string('status')->default("pending");
+            $table->enum('status', ['pending', 'completed', 'cancelled'])->default("pending");
             $table->text("message")->nullable();
             $table->timestamps();
         });
