@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\BankController;
 use App\Http\Controllers\Admin\CountryController;
+use App\Http\Controllers\Admin\OrderController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\ServiceController;
@@ -27,6 +28,10 @@ Route::get('dashboard', [DashboarController::class , 'getStatistics']);
 
 // Countries routes
 Route::apiResource('countries', CountryController::class);
+
+// Orders
+Route::apiResource('orders', OrderController::class)->only(['index', 'show']);
+Route::post('orders/{order}/update-status', [OrderController::class, 'updateStatus']);
 
 // Banks routes
 Route::apiResource('banks', BankController::class);

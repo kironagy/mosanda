@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\BankController;
 use App\Http\Controllers\Api\CountryController;
+use App\Services\PayService;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\ServiceController;
@@ -10,6 +11,10 @@ use App\Http\Controllers\Api\PakegeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Middleware\SetLangMiddleware;
+use App\Models\Order;
+use App\Models\Pakeges;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,10 +39,10 @@ Route::post("logout" , [AuthController::class , 'logout']);
 
 
 
-Route::post('/pay/{id}', [PaymentController::class, 'pay']);
-Route::post('/coingate/callback', [PaymentController::class, 'callback'])->name('coingate.callback');
-Route::get('/coingate/success', [PaymentController::class, 'success'])->name('coingate.success');
-Route::get('/coingate/cancel', [PaymentController::class, 'cancel'])->name('coingate.cancel');
+// Route::post('/pay/{id}', [PaymentController::class, 'pay']);
+// Route::post('/coingate/callback', [PaymentController::class, 'callback'])->name('coingate.callback');
+// Route::get('/coingate/success', [PaymentController::class, 'success'])->name('coingate.success');
+// Route::get('/coingate/cancel', [PaymentController::class, 'cancel'])->name('coingate.cancel');
 
 
 
@@ -78,3 +83,30 @@ Route::get('countries/{country}', [CountryController::class, 'show']);
 Route::get('banks', [BankController::class, 'index']);
 Route::get('banks/{bank}', [BankController::class, 'show']);
 
+
+Route::post('/pay', function (Request $request, PayService $payService) {
+    // استلم الـ pakege_id من الـ request
+    $pakegeId = $request->input('pakege_id');
+
+    // جيب الباقة من الـ DB
+    $pakege = Pakeges::find($pakegeId);
+    if (!$pakege) {
+        return response()->json(["error" => "Package not found"], 404);
+    }
+
+    // السعر ييجي من الباقة
+    $amount = $pakege->price;
+
+    // استدعاء خدمة الدفع
+    $payment = $payService->generatePayment(
+        $amount,
+        $request->input('email', 'customer@example.com'),
+        $pakegeId,   // pakege_id
+        'pakege'     // النوع
+    );
+
+    return response()->json([
+        "package"  => $pakege->title,
+        "payment"  => $payment,
+    ]);
+});

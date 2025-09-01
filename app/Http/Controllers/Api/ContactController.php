@@ -7,6 +7,7 @@ use App\Models\Contacts;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Services\PayService;
 
 class ContactController extends Controller
 {
@@ -70,7 +71,7 @@ class ContactController extends Controller
         ]);
     }
     
-    public function store(Request $request)
+    public function store(Request $request , PayService $payService)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
@@ -95,8 +96,19 @@ class ContactController extends Controller
         $requestData['amount'] = $amount;
         
         $contact = Contacts::create($requestData);
-        
-        return response()->json(['data' => $contact, 'message' => 'Contact created successfully'], 201);
+            // 3. استدعاء خدمة الدفع
+        $payment = $payService->generatePayment(
+            $amount,
+            $request->input('email', 'customer@example.com'),
+            null, // مفيش pakege_id هنا لأنه custom
+            'custom' // نحدد النوع لو عايز تميّزه
+        );
+
+        // 4. رجّع البيانات
+        return response()->json([
+            'payment' => $payment,
+            'message' => 'Contact created successfully, payment link generated'
+        ], 201);
     }
     
     public function show($id)
