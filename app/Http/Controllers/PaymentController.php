@@ -4,83 +4,71 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
-use App\Models\Package;
-use App\Models\Order;
 use App\Models\Pakeges;
+use App\Models\Order;
 
 class PaymentController extends Controller
 {
-    protected $client;
-    protected $apiKey;
-    protected $apiUrl;
-
-    public function __construct()
+    public function pay($id)
     {
-        $this->client = new Client();
-        $this->apiKey = env('NOWPAYMENTS_API_KEY');
-        $this->apiUrl = env('NOWPAYMENTS_API_URL', 'https://api-sandbox.nowpayments.io/v1');
-    }
+        $package = Pakeges::findOrFail($id);
 
-    // إنشاء عملية شراء
-    public function createPayment($pakageId)
-    {
-        $package = Pakeges::findOrFail($pakageId);
-        $amount  = $package->price;
-
-        $response = $this->client->post($this->apiUrl . '/payment', [
+        $client = new Client();
+        $response = $client->post(env('COINGATE_API_URL') . '/orders', [
             'headers' => [
-                'x-api-key' => $this->apiKey,
-                'Content-Type' => 'application/json'
+                'Authorization' => 'Token ' . env('COINGATE_API'),
+                'Accept'        => 'application/json',
             ],
-            'json' => [
-                'price_amount'      => $amount,
-                'price_currency'    => 'usd',   // ✅ عملة تسعير المنتج
-                'pay_currency'      => 'usd',   // ✅ لازم تختار من القائمة اللي فوق
-                'ipn_callback_url'  => route('nowpayments.webhook'),
-                'order_id'          => uniqid(),
-                'order_description' => 'Package purchase #' . $package->id
-            ]
+            'form_params' => [
+                'order_id'       => uniqid(),
+                'price_amount'   => $package->price,
+                'price_currency' => 'EUR',
+                'receive_currency' => 'BTC',
+                'callback_url'   => route('coingate.callback'),
+                'cancel_url'     => route('coingate.cancel'),
+                'success_url'    => route('coingate.success'),
+            ],
         ]);
 
-        $payment = json_decode($response->getBody(), true);
+        $order = json_decode($response->getBody(), true);
 
-        if (!empty($payment['invoice_url'])) {
-            Order::create([
-                'pakeges_id' => $package->id,
-                'order_id'   => $payment['order_id'],
-                'amount'     => $amount,
-                'status'     => 'pending',
-                'payment_id' => $payment['payment_id'],
-            ]);
+        // هنا ممكن تحفظ order في DB
+        Order::create([
+          'order_id'     => uniqid(), // أو أي رقم تعريف داخلي
+    'pakeges_id'   => $package->id,
+    'amount'       => $package->price,
+    'status'       => $order['status'] ?? 'new',
+    'coingate_id'  => $order['id'] ?? null,
+        ]);
 
-            return response()->json([
-                'invoice_url' => $payment['invoice_url'],
-                'payment_id'  => $payment['payment_id']
-            ]);
-        }
-
-        return response()->json(['error' => 'Could not create payment'], 500);
+        return response()->json([
+            'status'       => 'success',
+            'payment_url'  => $order['payment_url'] ?? null,
+            'coingate_id'  => $order['id'] ?? null,
+        ]);
     }
 
-    // Webhook من NowPayments
-    public function webhook(Request $request)
+    public function callback(Request $request)
     {
-        $data = $request->all();
+        // سجل بيانات الدفع من Coingate
+        \Log::info('Coingate Callback', $request->all());
 
-        // تحقق من التوقيع
-        $ipnSecret = env('NOWPAYMENTS_IPN_SECRET');
-        $hmac = hash_hmac("sha512", $request->getContent(), $ipnSecret);
-
-        if ($request->header('x-nowpayments-sig') !== $hmac) {
-            return response()->json(['error' => 'Invalid signature'], 403);
+        // تقدر تحدث حالة الطلب في DB
+        if ($request->has('id')) {
+            Order::where('coingate_id', $request->id)
+                ->update(['status' => $request->status ?? 'unknown']);
         }
 
-        $order = Order::where('order_id', $data['order_id'])->first();
-        if ($order) {
-            $order->status = $data['payment_status']; // pending, confirming, finished, failed
-            $order->save();
-        }
+        return response()->json(['message' => 'OK']);
+    }
 
-        return response()->json(['message' => 'ok']);
+    public function success()
+    {
+        return response()->json(['message' => '✅ Payment successful']);
+    }
+
+    public function cancel()
+    {
+        return response()->json(['message' => '❌ Payment cancelled']);
     }
 }

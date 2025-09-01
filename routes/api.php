@@ -1,6 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\BankController;
+use App\Http\Controllers\Api\CountryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\ServiceController;
@@ -29,8 +30,22 @@ Route::post("login" , [AuthController::class , 'login']);
 Route::post("logout" , [AuthController::class , 'logout']);
 
 
-Route::post('/payment/{pakageId}', [PaymentController::class, 'createPayment']);
-Route::post('/webhook', [PaymentController::class, 'webhook'])->name('nowpayments.webhook');
+
+
+
+
+Route::post('/pay/{id}', [PaymentController::class, 'pay']);
+Route::post('/coingate/callback', [PaymentController::class, 'callback'])->name('coingate.callback');
+Route::get('/coingate/success', [PaymentController::class, 'success'])->name('coingate.success');
+Route::get('/coingate/cancel', [PaymentController::class, 'cancel'])->name('coingate.cancel');
+
+
+
+
+
+
+
+
 // Handle
 
 Route::post("calc-percentage" , [ContactController::class , 'calcPercentage']);
@@ -54,4 +69,12 @@ Route::middleware(SetLangMiddleware::class)->group(function(){
         require __DIR__.'/admin.php';
     });
 });
+
+// Countries routes - read only
+Route::get('countries', [CountryController::class, 'index']);
+Route::get('countries/{country}', [CountryController::class, 'show']);
+
+// Banks routes - read only
+Route::get('banks', [BankController::class, 'index']);
+Route::get('banks/{bank}', [BankController::class, 'show']);
 

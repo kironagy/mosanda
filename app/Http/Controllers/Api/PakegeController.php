@@ -21,6 +21,9 @@ class PakegeController extends Controller
                 'description' => $pakege->getTranslation('description', $appLang),
                 'image' => asset('storage/' . $pakege->image),
                 'price' => $pakege->price,
+                'amount_from' => $pakege->amount_from,
+                'amount_to' => $pakege->amount_to,
+                'support_percentage' => $pakege->support_percentage,
                 'created_at' => $pakege->created_at,
             ];
         });

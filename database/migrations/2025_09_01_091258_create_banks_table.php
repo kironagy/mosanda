@@ -11,14 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('orders', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('pakeges_id')->nullable();
-            $table->decimal('amount', 10, 2);
-            $table->string('status')->default('new');
-            $table->string('coingate_id')->nullable();
+        Schema::create('banks', function (Blueprint $table) {
+                  $table->id();
+            $table->json('name'); // JSON field for storing translations (en, ar)
+            $table->foreignId('country_id')->constrained()->onDelete('cascade');
             $table->timestamps();
-
         });
     }
 
@@ -27,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('orders');
+        Schema::dropIfExists('banks');
     }
 };

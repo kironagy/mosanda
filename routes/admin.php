@@ -1,6 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Admin\BankController;
+use App\Http\Controllers\Admin\CountryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\ServiceController;
@@ -23,3 +24,9 @@ Route::apiResource('pakeges', PakegeController::class);
 
 Route::apiResource('settings', SettingController::class)->only(['index', 'update']);
 Route::get('dashboard', [DashboarController::class , 'getStatistics']);
+
+// Countries routes
+Route::apiResource('countries', CountryController::class);
+
+// Banks routes
+Route::apiResource('banks', BankController::class);
