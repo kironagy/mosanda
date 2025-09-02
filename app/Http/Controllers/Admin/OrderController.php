@@ -12,14 +12,14 @@ class OrderController extends Controller
      // عرض كل الأوردرات
     public function index(Request $request)
     {
-        $query = Order::query();
+        $query = Order::query()->orderBy('created_at', 'desc'); // Order by created_at descending
         
         // Search functionality
         if ($request->has('search')) {
             $searchTerm = $request->search;
             $query->where(function($q) use ($searchTerm) {
                 $q->where('id', 'like', "%{$searchTerm}%")
-                     ->orWhere('amount', 'like', "%{$searchTerm}%")
+                ->orWhere('amount', 'like', "%{$searchTerm}%")
                   ->orWhere('payment_id', 'like', "%{$searchTerm}%")
                   ->orWhere('address_in', 'like', "%{$searchTerm}%")
                   ->orWhere('ipn_token', 'like', "%{$searchTerm}%");
