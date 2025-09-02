@@ -31,6 +31,19 @@ class CountryController extends Controller
      */
     public function show(Country $country)
     {
+        // Load the banks relationship
+        $country->load('banks');
+        
+        // Apply locale translation if needed
+        $locale = app()->getLocale();
+        $country->name = $country->name[$locale];
+        
+        // Apply locale translation to each bank
+        $country->banks->map(function($bank) use ($locale) {
+            $bank->name = $bank->name[$locale];
+            return $bank;
+        });
+        
         return response()->json([
             'status' => true,
             'message' => 'Country retrieved successfully',
