@@ -9,7 +9,7 @@ class PayService
 {
     protected $merchantWallet = "0xdacb1d6b9d5181b84446d8a22f6f168636a4fc86";
     protected $currency = "USD";
-    protected $provider = "rampnetwork";
+    protected $provider = "guardarian";
 
     public function generatePayment($amount, $email, $pakegeId = null, $customType = null)
     {
