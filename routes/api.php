@@ -83,6 +83,10 @@ Route::get('countries/{country}', [CountryController::class, 'show']);
 Route::get('banks', [BankController::class, 'index']);
 Route::get('banks/{bank}', [BankController::class, 'show']);
 
+// Percentages routes - read only
+use App\Http\Controllers\Api\PercentageController;
+Route::get('percentages', [PercentageController::class, 'index']);
+
 
 Route::post('/pay', function (Request $request, PayService $payService) {
     // استلم الـ pakege_id من الـ request

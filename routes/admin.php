@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\BankController;
 use App\Http\Controllers\Admin\CountryController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\PercentageController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\ServiceController;
@@ -35,3 +36,6 @@ Route::post('orders/{order}/update-status', [OrderController::class, 'updateStat
 
 // Banks routes
 Route::apiResource('banks', BankController::class);
+
+// Percentages routes
+Route::apiResource('percentages', PercentageController::class);
