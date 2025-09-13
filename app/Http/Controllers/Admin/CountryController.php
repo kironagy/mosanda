@@ -18,6 +18,7 @@ class CountryController extends Controller
         // Transform the countries collection to include localized names
         $countries = $countries->map(function($country) {
             $country->name = $country->name[app()->getLocale()];
+            $country->code = $country->code;
             return $country;
         });
 
@@ -33,11 +34,13 @@ class CountryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'code' => 'required|string|max:255',
             'name.en' => 'required|string|max:255',
             'name.ar' => 'required|string|max:255',
         ]);
 
         $country = Country::create([
+            'code' => $request->code,
             'name' => [
                 'en' => $request->name['en'],
                 'ar' => $request->name['ar'],
@@ -69,11 +72,13 @@ class CountryController extends Controller
     public function update(Request $request, Country $country)
     {
         $request->validate([
+            'code' => 'required|string|max:255',
             'name.en' => 'required|string|max:255',
             'name.ar' => 'required|string|max:255',
         ]);
 
         $country->update([
+            'code' => $request->code,
             'name' => [
                 'en' => $request->name['en'],
                 'ar' => $request->name['ar'],

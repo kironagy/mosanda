@@ -16,6 +16,7 @@ class CountryController extends Controller
         $locale = app()->getLocale();
         $countries = Country::all()->map(function($country) use ($locale) {
             $country->name = $country->name[$locale];
+            $country->code = $country->code;
             return $country;
         });
 
@@ -37,6 +38,7 @@ class CountryController extends Controller
         // Apply locale translation if needed
         $locale = app()->getLocale();
         $country->name = $country->name[$locale];
+        $country->code = $country->code;
         
         // Apply locale translation to each bank
         $country->banks->map(function($bank) use ($locale) {

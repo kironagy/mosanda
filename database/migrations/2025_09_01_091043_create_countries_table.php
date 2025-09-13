@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('countries', function (Blueprint $table) {
             $table->id();
             $table->json('name'); // JSON field for storing translations (en, ar)
+            $table->string('code'); // JSON field for storing translations (en, ar)
             $table->timestamps();
         });
     }
