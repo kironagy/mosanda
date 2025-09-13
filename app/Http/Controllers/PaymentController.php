@@ -35,10 +35,10 @@ class PaymentController extends Controller
         // هنا ممكن تحفظ order في DB
         Order::create([
           'order_id'     => uniqid(), // أو أي رقم تعريف داخلي
-    'pakeges_id'   => $package->id,
-    'amount'       => $package->price,
-    'status'       => $order['status'] ?? 'new',
-    'coingate_id'  => $order['id'] ?? null,
+            'pakeges_id'   => $package->id,
+            'amount'       => $package->price,
+            'status'       => $order['status'] ?? 'new',
+            'coingate_id'  => $order['id'] ?? null,
         ]);
 
         return response()->json([

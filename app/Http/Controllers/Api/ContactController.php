@@ -90,7 +90,7 @@ class ContactController extends Controller
 
         $data = Setting::first();
         $supportPercentage = $data['subscription_fee_percentage'] ?? 0;
-        $amount = $request->support_amount * ($supportPercentage / 100);
+        $amount = $request->amount;
 
         $requestData = $request->all();
         $requestData['amount'] = $amount;
